@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chick QA Form</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f0;--card:#fff;--ink:#17211d;--mute:#5d6b65;--line:#d3dcd8;--brand:#1f6f5c;--brand-d:#154f42;--warn:#c77a00;--ok:#1a7f45;--bad:#b3261e;--okbg:#dff3e6;--badbg:#fbe0dd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px 12px 40px}
+h1{font-size:1.4rem;margin:8px 0 12px}
+h2{font-size:1.05rem;margin:0 0 10px}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+.head{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:.85rem;color:var(--mute);margin-bottom:3px}
+input,select{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
+input:focus,select:focus,button:focus-visible{outline:3px solid #86c5b4;outline-offset:1px}
+.sample{grid-column:1/-1;font-size:.95rem}
+.note{background:#fff4d6;border-left:5px solid var(--warn);padding:10px 12px;border-radius:6px;margin:12px 0 0;font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.85rem;color:var(--mute);margin-bottom:8px}
+.legend b{color:var(--ink)}
+.grid{display:grid;grid-template-columns:26px repeat(5,1fr) 1.7fr 1.3fr;gap:5px;align-items:center}
+.gh{position:sticky;top:0;z-index:2;background:var(--card);padding:6px 0;font-weight:700;font-size:.8rem;text-align:center;border-bottom:2px solid var(--line);margin-bottom:6px}
+.row{padding:3px 0;border-radius:6px}
+.row.done{background:#f3f8f6}
+.row.miss{background:var(--badbg)}
+.no{text-align:right;font-weight:700;color:var(--mute);font-size:.9rem}
+.chip{height:42px;border:1.5px solid var(--line);background:#fff;border-radius:7px;font:700 .95rem inherit;font-family:inherit;color:var(--mute);cursor:pointer;padding:0}
+.chip.big{font-size:.78rem}
+.chip[aria-pressed=true]{color:#fff;border-color:transparent}
+.chip.f[aria-pressed=true]{background:var(--warn)}
+.chip.E[aria-pressed=true]{background:var(--ok)}
+.chip.X[aria-pressed=true]{background:var(--bad)}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+.res div{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:5px 0}
+.res span:last-child{font-weight:700}
+.res.sep{margin-top:12px;padding-top:10px;border-top:2px solid var(--line)}
+.sale{margin-top:12px;border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;font-weight:700;border:2px solid}
+.sale .v{font-size:2rem}
+.sale small{display:block;font-weight:400}
+.sale.ok{background:var(--okbg);color:var(--ok);border-color:var(--ok)}
+.sale.bad{background:var(--badbg);color:var(--bad);border-color:var(--bad)}
+.submit{width:100%;padding:15px;font:700 1.05rem inherit;font-family:inherit;background:var(--brand);color:#fff;border:0;border-radius:9px;cursor:pointer}
+.submit:hover{background:var(--brand-d)}
+.submit:disabled{opacity:.6;cursor:wait}
+#msg{margin-top:10px;font-weight:700;text-align:center}
+@media(max-width:520px){.head{grid-template-columns:1fr}.res{grid-template-columns:1fr}.grid{gap:4px;grid-template-columns:22px repeat(5,1fr) 1.8fr 1.4fr}.chip{height:44px}}
+</style>
+</head>
+<body>
+<main>
+<h1>Chick QA Form</h1>
+
+<section>
+  <div class="head">
+    <div><label for="hatchDate">Hatch Date</label><input type="date" id="hatchDate"></div>
+    <div><label for="hatchery">Hatchery</label><select id="hatchery"></select></div>
+    <div><label for="farm">Farm Source</label><select id="farm"></select></div>
+    <div><label for="machine">Machine number</label><input id="machine" autocomplete="off"></div>
+    <div class="sample">DOC Sample: <b id="sampleN">25</b></div>
+  </div>
+  <p class="note">Mohon lakukan pengecekan maksimal 1 jam setelah pullout (sebelum grading).</p>
+</section>
+
+<section>
+  <h2>Chick number <span id="prog" style="font-weight:400;color:var(--mute);font-size:.85rem"></span></h2>
+  <div class="legend"><span><b>N</b> Navel</span><span><b>H</b> Hocks</span><span><b>L</b> Legs</span><span><b>R</b> Reflex</span><span><b>D</b> Defect</span><span>Tap to select. N–D can be combined; Excellent or Reject only one.</span></div>
+  <div class="grid gh"><span>#</span><span>N</span><span>H</span><span>L</span><span>R</span><span>D</span><span>Excellent</span><span>Reject</span></div>
+  <div id="rows"></div>
+</section>
+
+<section>
+  <h2>Chick QA Result</h2>
+  <div class="res" id="res"></div>
+  <div class="res sep" id="res2"></div>
+  <div class="sale ok" id="sale"><div>Saleable chick<small>(DOC Sample − Reject) · standard ≥ 95%</small></div><div class="v" id="saleV">100%</div></div>
+</section>
+
+<button class="submit" id="submit" type="button">Submit to Google Sheet</button>
+<div id="msg" role="status"></div>
+</main>
+
+<script>
+// Paste your Google Apps Script Web app URL here (see setup steps)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_273cid8RetYpwZf8zQh5_6AYcjFgcE1Y7Pw8SnNj6V_ortmX3TjiTait9-nu1dVr/exec";
+const N = 25, STD = 95;
+const FLAGS = [["N","Navel"],["H","Hocks"],["L","Legs"],["R","Reflex"],["D","Defect"]];
+let st = [];
+const $ = id => document.getElementById(id);
+const HATCHERIES = ["Cirata HY","Garut HY","Limus HY","Sukajaya HY","Sukajaya HY Bawah","Sukajaya HY Atas","Rancaekek HY"];
+const FARMS = ["5001 - Melati","5002 - Anggrek","5003 - Rafflesia","5004 - Arum","5005 - Edelweiss","5006 - Cikembar 2","5007 - Campaka","5008 - Mentengsari","5009 - Darawati","5010 - Wijaya","5011 - Sunflower","5012 - Peonis","5013 - Marigold","5014 - Ixora","5015 - Lavender","5016 - Mawar"];
+const fill = (id, list) => { $(id).innerHTML = '<option value="">- Pilih -</option>' + list.map(v => `<option>${v}</option>`).join(""); };
+fill("hatchery", HATCHERIES); fill("farm", FARMS);
+
+function reset(){
+  st = Array.from({length:N}, () => ({N:0,H:0,L:0,R:0,D:0,S:null}));
+  $("rows").innerHTML = st.map((_, i) =>
+    `<div class="grid row" data-i="${i}"><span class="no">${i+1}</span>` +
+    FLAGS.map(([k,n]) => `<button type="button" class="chip f" data-k="${k}" aria-label="${n}" aria-pressed="false">${k}</button>`).join("") +
+    `<button type="button" class="chip big E" data-k="E" aria-pressed="false">Excellent</button>` +
+    `<button type="button" class="chip big X" data-k="X" aria-pressed="false">Reject</button></div>`
+  ).join("");
+  calc();
+}
+
+$("rows").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  const row = b.closest(".row"), s = st[+row.dataset.i], k = b.dataset.k;
+  if (k === "E" || k === "X") s.S = (s.S === k) ? null : k;
+  else s[k] = s[k] ? 0 : 1;
+  row.querySelectorAll(".chip").forEach(c => {
+    const kk = c.dataset.k;
+    c.setAttribute("aria-pressed", (kk==="E"||kk==="X") ? s.S===kk : !!s[kk]);
+  });
+  row.classList.remove("miss");
+  row.classList.toggle("done", !!s.S);
+  calc();
+});
+
+const pct = c => (c / N * 100).toFixed(1);
+
+function calc(){
+  const cnt = {};
+  FLAGS.forEach(([k]) => cnt[k] = st.filter(s => s[k]).length);
+  const ex = st.filter(s => s.S === "E").length, rj = st.filter(s => s.S === "X").length;
+  const sale = (N - rj) / N * 100;
+  $("res").innerHTML = FLAGS.map(([k,n]) => `<div><span>${n}</span><span>${pct(cnt[k])}%</span></div>`).join("");
+  $("res2").innerHTML = `<div><span>Excellent</span><span>${pct(ex)}%</span></div><div><span>Reject</span><span>${pct(rj)}%</span></div>`;
+  $("saleV").textContent = sale.toFixed(1) + "%";
+  $("sale").className = "sale " + (sale >= STD ? "ok" : "bad");
+  $("prog").textContent = `(${ex + rj}/${N} graded)`;
+  return {cnt, ex, rj, sale};
+}
+
+$("submit").addEventListener("click", async () => {
+  const msg = $("msg"); msg.style.color = "var(--bad)"; msg.textContent = "";
+  const h = {hatchDate:$("hatchDate").value, hatchery:$("hatchery").value.trim(), farm:$("farm").value.trim(), machine:$("machine").value.trim()};
+  if (Object.values(h).some(v => !v)) { msg.textContent = "Isi Hatch Date, Hatchery, Farm Source dan Machine number."; return; }
+  if (SCRIPT_URL.startsWith("https://script.google.com/macros/s/AKfycbx4exgN2kyIxO_e85_2RG2I-8Ptf3dlyFTAEVzkCCfvgmnBe_dKtDgK_MfVP5ybFaxeaQ/exec")) { msg.textContent = "SCRIPT_URL belum diisi di file HTML."; return; }
+  const r = calc();
+  const payload = {...h, sample:N,
+    counts:{...r.cnt, Excellent:r.ex, Reject:r.rj},
+    pct:{Navel:pct(r.cnt.N), Hocks:pct(r.cnt.H), Legs:pct(r.cnt.L), Reflex:pct(r.cnt.R), Defect:pct(r.cnt.D), Excellent:pct(r.ex), Reject:pct(r.rj), Saleable:r.sale.toFixed(1)},
+    status: r.sale >= STD ? "PASS" : "FAIL",
+    chicks: st.map((s,i) => ({no:i+1, N:s.N, H:s.H, L:s.L, R:s.R, D:s.D, grade:s.S==="E"?"Excellent":s.S==="X"?"Reject":"N/A"}))};
+  const btn = $("submit"); btn.disabled = true; btn.textContent = "Sending...";
+  try {
+    await fetch(SCRIPT_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload)});
+    msg.style.color = "var(--ok)"; msg.textContent = "Data terkirim ke Google Sheet.";
+    ["hatchDate","hatchery","farm","machine"].forEach(id => $(id).value = "");
+    reset(); window.scrollTo({top:0, behavior:"smooth"});
+  } catch (err) {
+    msg.textContent = "Gagal kirim. Cek koneksi internet lalu coba lagi.";
+  }
+  btn.disabled = false; btn.textContent = "Submit to Google Sheet";
+});
+
+reset();
+</script>
+</body>
+</html>
