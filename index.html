@@ -89,7 +89,7 @@ const N = 25, STD = 95;
 const FLAGS = [["N","Navel"],["H","Hocks"],["L","Legs"],["R","Reflex"],["D","Defect"]];
 let st = [];
 const $ = id => document.getElementById(id);
-const HATCHERIES = ["Cirata HY","Garut HY","Limus HY","Sukajaya HY","Sukajaya HY Bawah","Sukajaya HY Atas","Rancaekek HY"];
+const HATCHERIES = ["Cirata HY","Garut HY","Sukajaya HY","Sukajaya HY Bawah","Sukajaya HY Atas","Rancaekek HY"];
 const FARMS = ["5001 - Melati","5002 - Anggrek","5003 - Rafflesia","5004 - Arum","5005 - Edelweiss","5006 - Cikembar 2","5007 - Campaka","5008 - Mentengsari","5009 - Darawati","5010 - Wijaya","5011 - Sunflower","5012 - Peonis","5013 - Marigold","5014 - Ixora","5015 - Lavender","5016 - Mawar"];
 const fill = (id, list) => { $(id).innerHTML = '<option value="">- Pilih -</option>' + list.map(v => `<option>${v}</option>`).join(""); };
 fill("hatchery", HATCHERIES); fill("farm", FARMS);
