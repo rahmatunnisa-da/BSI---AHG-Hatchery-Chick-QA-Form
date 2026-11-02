@@ -59,6 +59,8 @@ input:focus,select:focus,button:focus-visible{outline:3px solid #86c5b4;outline-
     <div><label for="hatchery">Hatchery</label><select id="hatchery"></select></div>
     <div><label for="farm">Farm Source</label><select id="farm"></select></div>
     <div><label for="machine">Machine number</label><input id="machine" autocomplete="off"></div>
+    <div><label for="ageps">Age of PS</label><input id="ageps" autocomplete="off"></div>
+    <div><label for="class">Class</label><select id="class"></select></div>
     <div class="sample">DOC Sample: <b id="sampleN">25</b></div>
   </div>
   <p class="note">Mohon lakukan pengecekan maksimal 1 jam setelah pullout (sebelum grading).</p>
@@ -136,7 +138,7 @@ function calc(){
 
 $("submit").addEventListener("click", async () => {
   const msg = $("msg"); msg.style.color = "var(--bad)"; msg.textContent = "";
-  const h = {hatchDate:$("hatchDate").value, hatchery:$("hatchery").value.trim(), farm:$("farm").value.trim(), machine:$("machine").value.trim()};
+  const h = {hatchDate:$("hatchDate").value, hatchery:$("hatchery").value.trim(), farm:$("farm").value.trim(), machine:$("machine").value.trim(), machine:$("machine").value.trim(), ageps:$("ageps").value.trim(), class:$("class").value.trim()};
   if (Object.values(h).some(v => !v)) { msg.textContent = "Isi Hatch Date, Hatchery, Farm Source dan Machine number."; return; }
   if (SCRIPT_URL.startsWith("https://script.google.com/macros/s/AKfycbx4exgN2kyIxO_e85_2RG2I-8Ptf3dlyFTAEVzkCCfvgmnBe_dKtDgK_MfVP5ybFaxeaQ/exec")) { msg.textContent = "SCRIPT_URL belum diisi di file HTML."; return; }
   const r = calc();
@@ -149,7 +151,7 @@ $("submit").addEventListener("click", async () => {
   try {
     await fetch(SCRIPT_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload)});
     msg.style.color = "var(--ok)"; msg.textContent = "Data terkirim ke Google Sheet.";
-    ["hatchDate","hatchery","farm","machine"].forEach(id => $(id).value = "");
+    ["hatchDate","hatchery","farm","machine","ageps","class"].forEach(id => $(id).value = "");
     reset(); window.scrollTo({top:0, behavior:"smooth"});
   } catch (err) {
     msg.textContent = "Gagal kirim. Cek koneksi internet lalu coba lagi.";
