@@ -93,8 +93,9 @@ let st = [];
 const $ = id => document.getElementById(id);
 const HATCHERIES = ["Cirata HY","Garut HY","Sukajaya HY","Sukajaya HY Bawah","Sukajaya HY Atas","Rancaekek HY"];
 const FARMS = ["5001 - Melati","5002 - Anggrek","5003 - Rafflesia","5004 - Arum","5005 - Edelweiss","5006 - Cikembar 2","5007 - Campaka","5008 - Mentengsari","5009 - Darawati","5010 - Wijaya","5011 - Sunflower","5012 - Peonis","5013 - Marigold","5014 - Ixora","5015 - Lavender","5016 - Mawar"];
+const CLASS = ["BM","Young Flock","Middle Flock","Mature Flock","Old Flock"];
 const fill = (id, list) => { $(id).innerHTML = '<option value="">- Pilih -</option>' + list.map(v => `<option>${v}</option>`).join(""); };
-fill("hatchery", HATCHERIES); fill("farm", FARMS);
+fill("hatchery", HATCHERIES); fill("farm", FARMS); fill("class", CLASS);
 
 function reset(){
   st = Array.from({length:N}, () => ({N:0,H:0,L:0,R:0,D:0,S:null}));
